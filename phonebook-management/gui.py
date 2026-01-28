@@ -138,6 +138,13 @@ def open_add_contact():
         font=("Arial", 11),
         relief="flat"
     )
+    btn_save.config(command=lambda: controller.save_contact_action(
+        entry_name, 
+        entry_phone, 
+        entry_email, 
+        txt_address, 
+        add_window
+    ))
     btn_cancel = tk.Button(
         btn_frame, text="Cancel",
         width=12, height=2,
@@ -155,3 +162,4 @@ btn_add.config(command=open_add_contact)
 
 # ================== RUN ==================
 root.mainloop()
+
