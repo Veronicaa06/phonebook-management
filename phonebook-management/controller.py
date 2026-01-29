@@ -5,14 +5,14 @@ import database
 
 def validate_data(name, phone):
     if not name.strip():
-        messagebox.showerror("Lỗi", "Tên liên hệ không được để trống!")
+        messagebox.showerror("Error", "Contact name cannot be left blank!")
         return False
     if not phone.isdigit():
-        messagebox.showerror("Lỗi", "Số điện thoại chỉ được chứa các chữ số!")
+        messagebox.showerror("Error", "Phone number must contain only digits!")
         return False
     
     if len(phone) < 10 or len(phone) > 11:
-        messagebox.showerror("Lỗi", "Số điện thoại phải có từ 10-11 chữ số!")
+        messagebox.showerror("Error", "Phone number must have between 10-11 digits!")
         return False
         
     return True
@@ -32,10 +32,10 @@ def save_contact_action(name_entry, phone_entry, email_entry, address_text, wind
                 val = (name, phone, email, address)
                 cursor.execute(sql, val)
                 conn.commit()
-                messagebox.showinfo("Thành công", "Đã thêm liên hệ mới vào SQLite!")
+                messagebox.showinfo("Success", "Successfully added new contact to SQLite!")
                 window.destroy()  
             except Exception as e:
-                messagebox.showerror("Lỗi Database", f"Không thể lưu: {e}")
+                messagebox.showerror("Database Error", f"Failed to save: {e}")
             finally:
                 conn.close()
 
@@ -57,6 +57,6 @@ def search_contact_logic(search_entry, treeview):
                 treeview.insert("", "end", values=row)
                 
         except Exception as e:
-            messagebox.showerror("Lỗi tìm kiếm", f"Lỗi: {e}")
+            messagebox.showerror("Search Error", f"Error: {e}")
         finally:
             conn.close()
