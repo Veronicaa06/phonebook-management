@@ -1,52 +1,47 @@
-import mysql.connector
+import sqlite3
+
+DB_NAME = "contact_app.db"
 
 def get_connection():
     """
-    Tạo kết nối tới database contact_app.
+    Tạo kết nối tới database SQLite (contact_app.db).
     Trả về đối tượng connection nếu thành công, None nếu thất bại.
     """
     try:
-        conn = mysql.connector.connect(
-            host="db",
-            user="root",
-            password="27022006",  # Thay bằng mật khẩu thực tế
-            database="contact_app"
-        )
+        conn = sqlite3.connect(DB_NAME)
         return conn
-    except mysql.connector.Error as e:
+    except sqlite3.Error as e:
         print(f"Lỗi kết nối database: {e}")
         return None
+
 
 def test_connection():
     """Test đơn giản kết nối database"""
     print("Đang test kết nối database...")
 
-    # Test kết nối
     conn = get_connection()
 
     if conn is None:
         print("Kết nối thất bại")
         return False
 
-    if conn.is_connected():
-        print("Kết nối thành công")
-
-        # Test truy vấn đơn giản
+    try:
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
         result = cursor.fetchone()
 
         if result and result[0] == 1:
-            print("Truy vấn test thành công")
+            print("Kết nối và truy vấn test thành công")
+            return True
         else:
             print("Truy vấn test thất bại")
+            return False
 
-        cursor.close()
-        conn.close()
-        return True
-    else:
-        print("Kết nối thất bại")
+    except sqlite3.Error as e:
+        print(f"Lỗi truy vấn: {e}")
         return False
+    finally:
+        conn.close()
 
 
 def test_basic_query():
@@ -60,8 +55,11 @@ def test_basic_query():
     try:
         cursor = conn.cursor()
 
-        # Kiểm tra xem bảng contacts có tồn tại không
-        cursor.execute("SHOW TABLES LIKE 'contacts'")
+        # Kiểm tra bảng contacts có tồn tại không (SQLite)
+        cursor.execute("""
+            SELECT name FROM sqlite_master 
+            WHERE type='table' AND name='contacts'
+        """)
         table_exists = cursor.fetchone()
 
         if table_exists:
@@ -74,24 +72,21 @@ def test_basic_query():
         else:
             print("Bảng 'contacts' không tồn tại")
 
-        cursor.close()
         return True
 
-    except mysql.connector.Error as e:
+    except sqlite3.Error as e:
         print(f"Lỗi truy vấn: {e}")
         return False
     finally:
-        if conn.is_connected():
-            conn.close()
+        conn.close()
+
 
 # Chạy các test
 if __name__ == "__main__":
-    print("=== BẮT ĐẦU TEST DATABASE ===\n")
+    print("=== BẮT ĐẦU TEST DATABASE (SQLITE) ===\n")
 
-    # Test kết nối
     connection_ok = test_connection()
 
-    # Test truy vấn cơ bản
     if connection_ok:
         test_basic_query()
 
