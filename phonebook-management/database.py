@@ -11,18 +11,18 @@ def get_connection():
         conn = sqlite3.connect(DB_NAME)
         return conn
     except sqlite3.Error as e:
-        print(f"Lỗi kết nối database: {e}")
+        print(f"Database connection error: {e}")
         return None
 
 
 def test_connection():
     """Test đơn giản kết nối database"""
-    print("Đang test kết nối database...")
+    print("Testing database connection...")
 
     conn = get_connection()
 
     if conn is None:
-        print("Kết nối thất bại")
+        print("Connection failed")
         return False
 
     try:
@@ -31,14 +31,14 @@ def test_connection():
         result = cursor.fetchone()
 
         if result and result[0] == 1:
-            print("Kết nối và truy vấn test thành công")
+            print("Connection and test query successful.")
             return True
         else:
-            print("Truy vấn test thất bại")
+            print("Test query failed")
             return False
 
     except sqlite3.Error as e:
-        print(f"Lỗi truy vấn: {e}")
+        print(f"Query error: {e}")
         return False
     finally:
         conn.close()
@@ -46,7 +46,7 @@ def test_connection():
 
 def test_basic_query():
     """Test truy vấn cơ bản"""
-    print("\nĐang test truy vấn cơ bản...")
+    print("\nTesting basic queries...")
 
     conn = get_connection()
     if conn is None:
@@ -70,24 +70,40 @@ def test_basic_query():
             count = cursor.fetchone()[0]
             print(f"Số lượng contacts: {count}")
         else:
-            print("Bảng 'contacts' không tồn tại")
+            print("The 'contacts' table does not exist.")
 
         return True
 
     except sqlite3.Error as e:
-        print(f"Lỗi truy vấn: {e}")
+        print(f"Query error: {e}")
         return False
     finally:
+        conn.close()
+
+def init_db():
+    conn = get_connection()
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS contacts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                full_name TEXT NOT NULL,
+                phone_number TEXT NOT NULL,
+                email TEXT,
+                address TEXT
+            )
+        """)
+        conn.commit()
         conn.close()
 
 
 # Chạy các test
 if __name__ == "__main__":
-    print("=== BẮT ĐẦU TEST DATABASE (SQLITE) ===\n")
+    print("=== START TESTING THE DATABASE (SQLITE) ===\n")
 
     connection_ok = test_connection()
 
     if connection_ok:
         test_basic_query()
 
-    print("\n=== KẾT THÚC TEST ===")
+    print("\n=== END OF TEST ===")
